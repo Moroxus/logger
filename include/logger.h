@@ -5,66 +5,52 @@
 #include <fstream>
 #include <sstream>
 #include <mutex>
+#include "enum.h"
 
-#define DEBUG() debug(__FILE__, __LINE__)
+#define LOG(x) log(x,__FILE__, __LINE__)
 
 namespace moroxus {
 
-    enum class LogLevel {ERROR, WARNING, INFO, DEBUG};
+    DECLARE_ENUM(LogLevel, NONE, ERROR, WARNING, INFO, DEBUG)
 
     class Logger
     {
     private:
+        static std::ofstream                            logFile;
+        static std::mutex                               mutex;
+        static LogLevel                                 logLevel;
+        static bool                                     consoleEnabled;
+        static bool                                     fileEnabled;
 
-        bool consoleEnabled;
-        bool fileEnabled;
-        LogLevel logLevel;
-        std::stringstream sstream;
-        static std::ofstream logFile;
-        static std::mutex mutex;
+        static thread_local std::stringstream           sstream;
 
-        bool isLastNewline();
+        LogLevel                    currentLevel = LogLevel::INFO;
 
         bool streamIsEmpty();
 
     public:
-
-        Logger(LogLevel loglevel = LogLevel::INFO, bool consoleEnable = true, bool fileEnable = false);
-        Logger &operator()(LogLevel);
+        Logger(LogLevel logLevel, const char *file, int line);
 
         template <typename T>
-        Logger &operator<<(T const value) {
-            sstream << value;
-
-            if (isLastNewline()) {
-                {
-                    std::lock_guard<std::mutex> lock(mutex);
-                    if (consoleEnabled) {
-                        std::clog << sstream.str();
-                        std::clog.flush();
-                    }
-                    if (fileEnabled) {
-                        logFile << sstream.str();
-                    }
-                }
-                sstream.str("");
-                sstream.clear();
+        Logger &operator<<(T const message) {
+            if (currentLevel <= Logger::logLevel) {
+                sstream << message;
             }
-
             return *this;
         }
-        void enableFile(std::string fileEnabled = "log");
 
-        void disableFile();
+        static void enableFile(std::string fileEnabled = "log");
 
-        void enableConsole();
+        static void disableFile();
 
-        void disableConsole();
+        static void enableConsole();
 
-        Logger &debug(const char *, int);
+        static void disableConsole();
 
         ~Logger();
     };
+
+    Logger log(LogLevel logLevel, const char *file, int line);
 
 }
 

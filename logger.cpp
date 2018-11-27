@@ -2,31 +2,25 @@
 
 std::ofstream moroxus::Logger::logFile;
 std::mutex moroxus::Logger::mutex;
+moroxus::LogLevel moroxus::Logger::logLevel = moroxus::LogLevel::INFO;
 
-bool moroxus::Logger::isLastNewline() {
-    int actual = sstream.tellg();
-    sstream.seekg(-1, std::ios_base::end);
-    char c = sstream.peek();
-    sstream.seekg(actual);
+thread_local std::stringstream moroxus::Logger::sstream;
 
-    return c == '\n';
-}
+bool moroxus::Logger::consoleEnabled    = true;
+bool moroxus::Logger::fileEnabled       = false;
 
 bool moroxus::Logger::streamIsEmpty() {
-    int actual = sstream.tellg();
+    auto actual = sstream.tellg();
     sstream.seekg(0, std::ios_base::end);
-    int end = sstream.tellg();
+    auto end = sstream.tellg();
     sstream.seekg(actual);
-    actual == end;
+    return actual == end;
 }
 
-moroxus::Logger::Logger(moroxus::LogLevel logLevel, bool consoleEnable, bool fileEnable):logLevel(logLevel),
-    consoleEnabled(consoleEnable),
-    fileEnabled(fileEnable) {}
-
-moroxus::Logger &moroxus::Logger::operator()(moroxus::LogLevel logLevel) {
-    this->logLevel = logLevel;
-    return *this;
+moroxus::Logger::Logger(LogLevel logLevel, const char * file, int line):currentLevel(logLevel) {
+    if (currentLevel <= Logger::logLevel) {
+        sstream << logLevel <<" FILE: " << file << " LINE: " << line << " ";
+    }
 }
 
 void moroxus::Logger::enableFile(std::string file) {
@@ -51,13 +45,9 @@ void moroxus::Logger::disableConsole() {
     consoleEnabled = false;
 }
 
-moroxus::Logger &moroxus::Logger::debug(const char *file, int line) {
-    sstream << "FILE: " << file << " LINE: " << line << "\t\t";
-    return *this;
-}
-
 moroxus::Logger::~Logger() {
     if (!streamIsEmpty()) {
+        sstream << "\n";
         std::lock_guard<std::mutex> lock(mutex);
         if (consoleEnabled) {
             std::clog << sstream.str();
@@ -65,5 +55,11 @@ moroxus::Logger::~Logger() {
         if (fileEnabled) {
             logFile << sstream.str();
         }
+        sstream.str("");
+        sstream.clear();
     }
+}
+
+moroxus::Logger moroxus::log(LogLevel logLevel, const char * file, int line) {
+    return Logger(logLevel, file, line);
 }

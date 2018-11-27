@@ -1,23 +1,24 @@
 #include <logger.h>
 #include <thread>
 
+using namespace moroxus;
+
 void function(int threadid, bool file) {
-    moroxus::Logger log;
     if (file) {
-        log.enableFile();
+        Logger::enableFile();
     }
     for (int var = 0; var < 10; ++var) {
-        log.DEBUG() << "Thread number " << threadid << "; value: " << threadid*var << "\n";
+        LOG(LogLevel::INFO) << "Thread number " << threadid << "; value: " << threadid*var;
     }
 }
 
 int main()
 {
-    moroxus::Logger log;
-    std::thread t1(function,1, true);
+    LOG(LogLevel::INFO) << "serus z remastered loggera :D ";
+    LOG(LogLevel::ERROR) << "ahoj" << " kámo " << "ako žiješ? :D :D";
+    std::thread t1(function,1, false);
     std::thread t2(function,2, false);
     t1.join();
     t2.join();
-    log.DEBUG() << "end";
     return 0;
 }
