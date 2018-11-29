@@ -7,7 +7,7 @@
 #include <mutex>
 #include "enum.h"
 
-#define LOG(x) log(x, __FILE__, __LINE__)
+#define LOG(x) Logger(x, __FILE__, __LINE__)
 
 namespace moroxus {
 
@@ -76,9 +76,6 @@ namespace moroxus {
 
         ~Logger();
     };
-
-    Logger log(LogLevel logLevel, const char *file, int line);
-
 }
 
 #endif // LOGGER_H
