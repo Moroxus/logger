@@ -1,17 +1,18 @@
 #include "logger.h"
 
 using namespace std;
+using namespace moroxus;
 
-ofstream moroxus::Logger::logFile;
-mutex moroxus::Logger::mutex;
-moroxus::LogLevel moroxus::Logger::logLevel = moroxus::LogLevel::INFO;
+ofstream Logger::logFile;
+mutex Logger::mutex;
+LogLevel Logger::logLevel = LogLevel::INFO;
 
-thread_local stringstream moroxus::Logger::sstream;
+thread_local stringstream Logger::sstream;
 
-bool moroxus::Logger::consoleEnabled    = true;
-bool moroxus::Logger::fileEnabled       = false;
+bool Logger::consoleEnabled    = true;
+bool Logger::fileEnabled       = false;
 
-bool moroxus::Logger::streamIsEmpty() {
+bool Logger::streamIsEmpty() {
     auto actual = sstream.tellg();
     sstream.seekg(0, std::ios_base::end);
     auto end = sstream.tellg();
@@ -19,23 +20,23 @@ bool moroxus::Logger::streamIsEmpty() {
     return actual == end;
 }
 
-moroxus::Logger::Logger(LogLevel logLevel, const char * file, int line):currentLevel(logLevel) {
+Logger::Logger(LogLevel logLevel, const char * file, int line):currentLevel(logLevel) {
     if (currentLevel <= Logger::logLevel) {
         sstream << logLevel <<" FILE: " << file << " LINE: " << line << " ";
     }
 }
 
-void moroxus::Logger::setLogLevel(LogLevel logLevel) {
+void Logger::setLogLevel(LogLevel logLevel) {
     lock_guard<std::mutex> lock(mutex);
     Logger::logLevel = logLevel;
 }
 
-moroxus::LogLevel moroxus::Logger::getLogLevel() {
+LogLevel Logger::getLogLevel() {
     lock_guard<std::mutex> lock(mutex);
     return Logger::logLevel;
 }
 
-void moroxus::Logger::enableFile(std::string file) {
+void Logger::enableFile(string file) {
     lock_guard<std::mutex> locks(mutex);
     logFile.open(file, ofstream::out | ofstream::app);
     if(!logFile) {
@@ -45,23 +46,23 @@ void moroxus::Logger::enableFile(std::string file) {
     }
 }
 
-void moroxus::Logger::disableFile() {
+void Logger::disableFile() {
     lock_guard<std::mutex> locks(mutex);
     logFile.close();
     fileEnabled = false;
 }
 
-void moroxus::Logger::enableConsole() {
+void Logger::enableConsole() {
     lock_guard<std::mutex> locks(mutex);
     consoleEnabled = true;
 }
 
-void moroxus::Logger::disableConsole() {
+void Logger::disableConsole() {
     lock_guard<std::mutex> locks(mutex);
     consoleEnabled = false;
 }
 
-moroxus::Logger::~Logger() {
+Logger::~Logger() {
     if (!streamIsEmpty()) {
         sstream << "\n";
         lock_guard<std::mutex> lock(mutex);
@@ -76,6 +77,6 @@ moroxus::Logger::~Logger() {
     }
 }
 
-moroxus::Logger moroxus::log(LogLevel logLevel, const char * file, int line) {
+Logger moroxus::log(LogLevel logLevel, const char * file, int line) {
     return Logger(logLevel, file, line);
 }
