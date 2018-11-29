@@ -41,9 +41,20 @@ namespace moroxus {
             return *this;
         }
         /**
+         * @brief setLogLevel Set level of logging messages to be on the output.
+         * If Loglevel is set to ERROR, lower level messages (WARNING, INFO, DEBUG)
+         * will not be outputted.
+         * @param logLevel
+         */
+        static void setLogLevel(LogLevel logLevel);
+        /**
+         * @brief getLogLevel returns Current loglevel of messages to be on the output
+         * @return moroxus::LogLevel
+         */
+        static LogLevel getLogLevel();
+        /**
          * @brief enableFile Enables logging into the file and sets name of that file.
-         * This method is not thread safe and influences all threads
-         * (All threads will start logging into that file).
+         * Influences all threads (All threads will start logging into that file).
          * @param fileEnabled name of file for logging into
          */
         static void enableFile(std::string fileEnabled = "log");

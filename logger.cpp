@@ -25,8 +25,18 @@ moroxus::Logger::Logger(LogLevel logLevel, const char * file, int line):currentL
     }
 }
 
-void moroxus::Logger::enableFile(std::string file) {
+void moroxus::Logger::setLogLevel(LogLevel logLevel) {
+    lock_guard<std::mutex> lock(mutex);
+    Logger::logLevel = logLevel;
+}
 
+moroxus::LogLevel moroxus::Logger::getLogLevel() {
+    lock_guard<std::mutex> lock(mutex);
+    return Logger::logLevel;
+}
+
+void moroxus::Logger::enableFile(std::string file) {
+    lock_guard<std::mutex> locks(mutex);
     logFile.open(file, ofstream::out | ofstream::app);
     if(!logFile) {
         fileEnabled = false;
@@ -36,15 +46,18 @@ void moroxus::Logger::enableFile(std::string file) {
 }
 
 void moroxus::Logger::disableFile() {
+    lock_guard<std::mutex> locks(mutex);
     logFile.close();
     fileEnabled = false;
 }
 
 void moroxus::Logger::enableConsole() {
+    lock_guard<std::mutex> locks(mutex);
     consoleEnabled = true;
 }
 
 void moroxus::Logger::disableConsole() {
+    lock_guard<std::mutex> locks(mutex);
     consoleEnabled = false;
 }
 
