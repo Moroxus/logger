@@ -1,10 +1,12 @@
 #include "logger.h"
 
-std::ofstream moroxus::Logger::logFile;
-std::mutex moroxus::Logger::mutex;
+using namespace std;
+
+ofstream moroxus::Logger::logFile;
+mutex moroxus::Logger::mutex;
 moroxus::LogLevel moroxus::Logger::logLevel = moroxus::LogLevel::INFO;
 
-thread_local std::stringstream moroxus::Logger::sstream;
+thread_local stringstream moroxus::Logger::sstream;
 
 bool moroxus::Logger::consoleEnabled    = true;
 bool moroxus::Logger::fileEnabled       = false;
@@ -24,7 +26,8 @@ moroxus::Logger::Logger(LogLevel logLevel, const char * file, int line):currentL
 }
 
 void moroxus::Logger::enableFile(std::string file) {
-    logFile.open(file, std::ofstream::out | std::ofstream::app);
+
+    logFile.open(file, ofstream::out | ofstream::app);
     if(!logFile) {
         fileEnabled = false;
     } else {
@@ -48,9 +51,9 @@ void moroxus::Logger::disableConsole() {
 moroxus::Logger::~Logger() {
     if (!streamIsEmpty()) {
         sstream << "\n";
-        std::lock_guard<std::mutex> lock(mutex);
+        lock_guard<std::mutex> lock(mutex);
         if (consoleEnabled) {
-            std::clog << sstream.str();
+            clog << sstream.str();
         }
         if (fileEnabled) {
             logFile << sstream.str();
