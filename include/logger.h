@@ -7,7 +7,7 @@
 #include <mutex>
 #include "enum.h"
 
-#define LOG(x) log(x,__FILE__, __LINE__)
+#define LOG(x) log(x, __FILE__, __LINE__)
 
 namespace moroxus {
 
@@ -24,7 +24,7 @@ namespace moroxus {
 
         static thread_local std::stringstream           sstream;
 
-        LogLevel                    currentLevel = LogLevel::INFO;
+        LogLevel                                        currentLevel = LogLevel::INFO;
 
         bool streamIsEmpty();
 

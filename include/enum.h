@@ -10,7 +10,7 @@
 
 #define STRING_REMOVE_CHAR(str, ch) str.erase(std::remove(str.begin(), str.end(), ch), str.end())
 
-std::vector<std::string> splitString(std::string str, char sep = ',') {
+inline std::vector<std::string> splitString(std::string str, char sep = ',') {
     std::vector<std::string> vecString;
     std::string item;
 
@@ -24,43 +24,43 @@ std::vector<std::string> splitString(std::string str, char sep = ',') {
     return vecString;
 }
 
-#define DECLARE_ENUM_WITH_TYPE(E, T, ...)                                                                     \
-    enum class E : T                                                                                          \
-    {                                                                                                         \
-        __VA_ARGS__                                                                                           \
-    };                                                                                                        \
-    std::map<T, std::string> E##MapName(generateEnumMap<T>(#__VA_ARGS__));                                    \
-    std::ostream &operator<<(std::ostream &os, E enumTmp)                                                     \
-    {                                                                                                         \
-        os << E##MapName[static_cast<T>(enumTmp)];                                                            \
-        return os;                                                                                            \
-    }                                                                                                         \
-    size_t operator*(E enumTmp) { (void) enumTmp; return E##MapName.size(); }                                 \
-    std::string operator~(E enumTmp) { return E##MapName[static_cast<T>(enumTmp)]; }                          \
-    std::string operator+(std::string &&str, E enumTmp) { return str + E##MapName[static_cast<T>(enumTmp)]; } \
-    std::string operator+(E enumTmp, std::string &&str) { return E##MapName[static_cast<T>(enumTmp)] + str; } \
-    std::string &operator+=(std::string &str, E enumTmp)                                                      \
-    {                                                                                                         \
-        str += E##MapName[static_cast<T>(enumTmp)];                                                           \
-        return str;                                                                                           \
-    }                                                                                                         \
-    E operator++(E &enumTmp)                                                                                  \
-    {                                                                                                         \
-        auto iter = E##MapName.find(static_cast<T>(enumTmp));                                                 \
-        if (iter == E##MapName.end() || std::next(iter) == E##MapName.end())                                  \
-            iter = E##MapName.begin();                                                                        \
-        else                                                                                                  \
-        {                                                                                                     \
-            ++iter;                                                                                           \
-        }                                                                                                     \
-        enumTmp = static_cast<E>(iter->first);                                                                \
-        return enumTmp;                                                                                       \
-    }                                                                                                         \
-    bool valid##E(T value) { return (E##MapName.find(value) != E##MapName.end()); }
+#define DECLARE_ENUM_WITH_TYPE(E, T, ...)                                                                               \
+    enum class E : T                                                                                                    \
+    {                                                                                                                   \
+        __VA_ARGS__                                                                                                     \
+    };                                                                                                                  \
+    inline std::map<T, std::string> E##MapName(generateEnumMap<T>(#__VA_ARGS__));                                       \
+    inline std::ostream &operator<<(std::ostream &os, E enumTmp)                                                        \
+    {                                                                                                                   \
+        os << E##MapName[static_cast<T>(enumTmp)];                                                                      \
+        return os;                                                                                                      \
+    }                                                                                                                   \
+    inline size_t operator*(E enumTmp) { (void) enumTmp; return E##MapName.size(); }                                    \
+    inline std::string operator~(E enumTmp) { return E##MapName[static_cast<T>(enumTmp)]; }                             \
+    inline std::string operator+(std::string &&str, E enumTmp) { return str + E##MapName[static_cast<T>(enumTmp)]; }    \
+    inline std::string operator+(E enumTmp, std::string &&str) { return E##MapName[static_cast<T>(enumTmp)] + str; }    \
+    inline std::string &operator+=(std::string &str, E enumTmp)                                                         \
+    {                                                                                                                   \
+        str += E##MapName[static_cast<T>(enumTmp)];                                                                     \
+        return str;                                                                                                     \
+    }                                                                                                                   \
+    inline E operator++(E &enumTmp)                                                                                     \
+    {                                                                                                                   \
+        auto iter = E##MapName.find(static_cast<T>(enumTmp));                                                           \
+        if (iter == E##MapName.end() || std::next(iter) == E##MapName.end())                                            \
+            iter = E##MapName.begin();                                                                                  \
+        else                                                                                                            \
+        {                                                                                                               \
+            ++iter;                                                                                                     \
+        }                                                                                                               \
+        enumTmp = static_cast<E>(iter->first);                                                                          \
+        return enumTmp;                                                                                                 \
+    }                                                                                                                   \
+    inline bool valid##E(T value) { return (E##MapName.find(value) != E##MapName.end()); }
 
 #define DECLARE_ENUM(E, ...) DECLARE_ENUM_WITH_TYPE(E, int32_t, __VA_ARGS__)
 template <typename T>
-std::map<T, std::string> generateEnumMap(std::string strMap)
+inline std::map<T, std::string> generateEnumMap(std::string strMap)
 {
     STRING_REMOVE_CHAR(strMap, ' ');
     STRING_REMOVE_CHAR(strMap, '(');
