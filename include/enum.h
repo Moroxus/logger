@@ -74,7 +74,6 @@ inline std::map<T, std::string> generateEnumMap(std::string strMap)
     {
         // Token: [EnumName | EnumName=EnumValue]
         std::string enumName;
-        T enumValue;
         if (iter->find('=') == std::string::npos)
         {
             enumName = *iter;
