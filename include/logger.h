@@ -6,6 +6,7 @@
 #include <sstream>
 #include <mutex>
 #include "enum.h"
+#include "logger_export.h"
 
 #define LOG(x) Logger(x, __FILE__, __LINE__)
 
@@ -20,7 +21,7 @@ namespace moroxus {
     private:
         static std::ofstream                            logFile;
         static std::mutex                               mutex;
-        static LogLevel                                 logLevel;
+        LOGGER_EXPORT static LogLevel                   logLevel;
         static bool                                     consoleEnabled;
         static bool                                     fileEnabled;
 
@@ -30,13 +31,16 @@ namespace moroxus {
 
         bool streamIsEmpty();
 
+    private:
+        LOGGER_EXPORT std::stringstream& stream();
+
     public:
-        Logger(LogLevel logLevel, const char *file, int line);
+        LOGGER_EXPORT Logger(LogLevel logLevel, const char *file, int line);
 
         template <typename T>
         Logger &operator<<(T const message) {
             if (currentLevel <= Logger::logLevel) {
-                sstream << message;
+                stream() << message;
             }
             return *this;
         }
@@ -46,35 +50,35 @@ namespace moroxus {
          * will not be outputted.
          * @param logLevel
          */
-        static void setLogLevel(LogLevel logLevel);
+        LOGGER_EXPORT static void setLogLevel(LogLevel logLevel);
         /**
          * @brief getLogLevel returns Current loglevel of messages to be on the output
          * @return moroxus::LogLevel
          */
-        static LogLevel getLogLevel();
+        LOGGER_EXPORT static LogLevel getLogLevel();
         /**
          * @brief enableFile Enables logging into the file and sets name of that file.
          * Influences all threads (All threads will start logging into that file).
          * @param fileEnabled name of file for logging into
          */
-        static void enableFile(std::string fileEnabled = "log");
+        LOGGER_EXPORT static void enableFile(std::string fileEnabled = "log");
         /**
          * @brief disableFile Disables logging into file and influences all threads
          * (All threads will stop logging into file).
          */
-        static void disableFile();
+        LOGGER_EXPORT static void disableFile();
         /**
          * @brief enableConsole Enables logging to the console and influences all threads
          * (All threads will start logging into console).
          */
-        static void enableConsole();
+        LOGGER_EXPORT static void enableConsole();
         /**
          * @brief disableConsole Disables logging to the console and influences all threads
          * (All threads will start logging into console).
          */
-        static void disableConsole();
+        LOGGER_EXPORT static void disableConsole();
 
-        ~Logger();
+        LOGGER_EXPORT ~Logger();
     };
 }
 

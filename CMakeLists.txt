@@ -1,14 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 project(logger)
 
+include(GenerateExportHeader)
+
 set(CMAKE_BUILD_TYPE DEBUG)
 
-add_library(${PROJECT_NAME} STATIC "logger.cpp" "include/logger.h" "include/enum.h")
+add_library(${PROJECT_NAME} "logger.cpp" "include/logger.h" "include/enum.h")
+generate_export_header(logger)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                                                  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                                                   $<INSTALL_INTERFACE:include/logger>)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "include/logger.h;include/enum.h")
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "include/logger.h;include/enum.h;${CMAKE_CURRENT_BINARY_DIR}/logger_export.h")
 
 install(TARGETS ${PROJECT_NAME} EXPORT loggerConfig
         LIBRARY DESTINATION lib/logger

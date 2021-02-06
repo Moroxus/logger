@@ -20,6 +20,11 @@ namespace moroxus {
         return actual == end;
     }
 
+    std::stringstream& Logger::stream()
+    {
+        return sstream;
+    }
+
     Logger::Logger(LogLevel logLevel, const char * file, int line):currentLevel(logLevel) {
         if (currentLevel <= Logger::logLevel) {
             sstream << logLevel <<" FILE: " << file << " LINE: " << line << " ";
